@@ -1,0 +1,58 @@
+[2026-03-03T09:15:22.640Z] [PERF] lookup_invoice | {"duration_ms":2187,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-03T09:16:21.895Z] [PERF] lookup_invoice | {"duration_ms":1154,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-03T09:20:13.905Z] [PERF] lookup_invoice | {"duration_ms":1432,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-03T09:20:20.913Z] [PERF] lookup_invoice | {"duration_ms":1096,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-03T09:35:15.631Z] [PERF] lookup_invoice | {"duration_ms":1439,"success":false,"error":"No unpaid invoices found."}
+[2026-03-03T09:35:40.476Z] [PERF] lookup_invoice | {"duration_ms":1271,"success":false,"error":"No unpaid invoices found."}
+[2026-03-05T06:46:28.136Z] [PERF] check_domain_availability | {"duration_ms":4005,"success":true,"available":false,"suggestions_count":1}
+[2026-03-05T06:46:29.957Z] [PERF] check_domain_availability | {"duration_ms":1784,"success":true,"available":false,"suggestions_count":0}
+[2026-03-05T06:46:33.025Z] [PERF] check_domain_availability | {"duration_ms":3057,"success":true,"available":true,"suggestions_count":8}
+[2026-03-05T06:58:46.406Z] [PERF] check_domain_availability | {"duration_ms":5090,"success":true,"available":true,"suggestions_count":7}
+[2026-03-05T07:07:47.635Z] [PERF] check_domain_availability | {"duration_ms":12508,"success":true,"available":false,"suggestions_count":8}
+[2026-03-05T07:08:14.408Z] [PERF] check_domain_availability | {"duration_ms":10303,"success":true,"available":false,"suggestions_count":8}
+[2026-03-05T07:17:55.967Z] [PERF] check_domain_availability | {"duration_ms":4697,"success":true,"available":false,"suggestions_count":6}
+[2026-03-05T07:20:10.360Z] [PERF] check_domain_availability | {"duration_ms":8676,"success":true,"available":false,"suggestions_count":6}
+[2026-03-05T07:47:04.975Z] [PERF] check_domain_availability | {"duration_ms":1521,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T08:17:10.920Z] [PERF] check_domain_availability | {"duration_ms":3059,"success":true,"available":false,"suggestions_count":3}
+[2026-03-05T08:18:21.998Z] [PERF] check_domain_availability | {"duration_ms":1228,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T08:52:36.298Z] [PERF] check_domain_availability | {"duration_ms":3915,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T08:53:26.155Z] [PERF] check_domain_availability | {"duration_ms":1247,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:01:17.149Z] [PERF] check_domain_availability | {"duration_ms":1707,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:02:55.710Z] [PERF] check_domain_availability | {"duration_ms":1350,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:03:59.579Z] [PERF] check_domain_availability | {"duration_ms":14700,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:04:29.431Z] [PERF] check_domain_availability | {"duration_ms":6159,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:07:35.346Z] [PERF] check_domain_availability | {"duration_ms":6658,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:11:14.785Z] [PERF] check_domain_availability | {"duration_ms":3344,"success":true,"available":false,"suggestions_count":3}
+[2026-03-05T09:23:01.631Z] [PERF] check_domain_availability | {"duration_ms":1486,"success":true,"available":true,"suggestions_count":0}
+[2026-03-05T09:44:28.063Z] [PERF] lookup_invoice | {"duration_ms":1962,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-05T09:45:51.513Z] [PERF] lookup_invoice | {"duration_ms":8299,"success":true,"multiple_invoices":true,"invoice_count":39}
+[2026-03-05T09:56:45.431Z] [PERF] lookup_invoice | {"duration_ms":5125,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-05T09:57:07.725Z] [PERF] lookup_invoice | {"duration_ms":5008,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-05T09:58:38.352Z] [PERF] lookup_invoice | {"duration_ms":6440,"success":true,"multiple_invoices":true,"invoice_count":39}
+[2026-03-05T10:02:25.055Z] [PERF] lookup_invoice | {"duration_ms":2333,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-05T10:04:01.734Z] [PERF] lookup_invoice | {"duration_ms":5011,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-05T10:05:25.816Z] [PERF] lookup_invoice | {"duration_ms":5427,"success":true,"multiple_invoices":true,"invoice_count":39}
+[2026-03-05T10:09:22.308Z] [PERF] lookup_invoice | {"duration_ms":5141,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-05T10:09:42.938Z] [PERF] lookup_invoice | {"duration_ms":5013,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-05T10:11:58.849Z] [PERF] lookup_invoice | {"duration_ms":5006,"success":false,"error":"No client found for the provided email. Please verify your information."}
+[2026-03-05T10:16:51.040Z] [PERF] lookup_invoice | {"duration_ms":2421,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-05T10:22:35.942Z] [PERF] lookup_invoice | {"duration_ms":10215,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-05T10:23:00.715Z] [PERF] lookup_invoice | {"duration_ms":10005,"success":false,"error":"No client found for the provided domain. Please verify your information."}
+[2026-03-06T07:37:03.872Z] [PERF] check_domain_availability | {"duration_ms":1500,"success":true,"available":true,"suggestions_count":0}
+[2026-03-06T07:41:37.365Z] [PERF] check_domain_availability | {"duration_ms":1332,"success":true,"available":true,"suggestions_count":0}
+[2026-03-06T07:43:06.985Z] [PERF] check_domain_availability | {"duration_ms":1145,"success":true,"available":true,"suggestions_count":0}
+[2026-03-06T08:41:42.860Z] [PERF] check_domain_availability | {"duration_ms":2033,"success":true,"available":true,"suggestions_count":0}
+[2026-03-06T08:46:31.523Z] [PERF] check_domain_availability | {"duration_ms":1351,"success":true,"available":true,"suggestions_count":0}
+[2026-03-06T08:47:11.558Z] [PERF] check_domain_availability | {"duration_ms":2047,"success":true,"available":true,"suggestions_count":0}
+[2026-03-06T08:48:14.361Z] [PERF] check_domain_availability | {"duration_ms":1349,"success":true,"available":true,"suggestions_count":0}
+[2026-03-07T10:09:44.157Z] [PERF] check_domain_availability | {"duration_ms":3384,"success":true,"available":false,"suggestions_count":2}
+[2026-03-07T10:11:17.663Z] [PERF] check_domain_availability | {"duration_ms":3895,"success":true,"available":true,"suggestions_count":0}
+[2026-03-07T10:12:32.602Z] [PERF] lookup_invoice | {"duration_ms":925,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:13:12.217Z] [PERF] lookup_invoice | {"duration_ms":1,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:13:24.564Z] [PERF] lookup_invoice | {"duration_ms":1,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:16:13.189Z] [PERF] lookup_invoice | {"duration_ms":6219,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:16:59.979Z] [PERF] lookup_invoice | {"duration_ms":2,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:17:08.467Z] [PERF] lookup_invoice | {"duration_ms":1639,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:17:12.565Z] [PERF] lookup_invoice | {"duration_ms":1231,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-07T10:21:03.171Z] [PERF] check_domain_availability | {"duration_ms":1971,"success":true,"available":true,"suggestions_count":0}
+[2026-03-07T10:22:01.596Z] [PERF] check_domain_availability | {"duration_ms":1411,"success":true,"available":true,"suggestions_count":0}

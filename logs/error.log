@@ -1,0 +1,10 @@
+[2026-03-03T09:35:15.631Z] [ERROR] lookup_invoice: No unpaid invoices found.
+[2026-03-03T09:35:40.476Z] [ERROR] lookup_invoice: No unpaid invoices found.
+[2026-03-05T09:56:45.432Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-05T09:57:07.725Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-05T10:04:01.734Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-05T10:09:22.308Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-05T10:09:42.938Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-05T10:11:58.850Z] [ERROR] lookup_invoice: No client found for the provided email. Please verify your information.
+[2026-03-05T10:22:35.943Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-05T10:23:00.715Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
