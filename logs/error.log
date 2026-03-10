@@ -8,3 +8,5 @@
 [2026-03-05T10:11:58.850Z] [ERROR] lookup_invoice: No client found for the provided email. Please verify your information.
 [2026-03-05T10:22:35.943Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
 [2026-03-05T10:23:00.715Z] [ERROR] lookup_invoice: No client found for the provided domain. Please verify your information.
+[2026-03-10T10:02:10.849Z] [ERROR] get_recommendations: Unknown tool: get_recommendations
+[2026-03-10T10:02:23.394Z] [ERROR] get_recommendations: Unknown tool: get_recommendations

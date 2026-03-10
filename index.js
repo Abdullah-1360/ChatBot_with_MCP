@@ -771,6 +771,25 @@ const MCP_TOOLS = [
             },
             required: ["domain"]
         }
+    },
+    {
+        name: "lookup_ticket",
+        description: "Find support ticket by ticket number with automatic phone validation from uChat. Returns ticket details, status, client info. Only requires ticket number - phone is automatically fetched from uChat variables.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                ticket: {
+                    type: "string",
+                    description: "Ticket number to lookup (required). Should be numeric."
+                },
+                phone: {
+                    type: "string",
+                    description: "Client phone number (automatically filled from uChat variables)",
+                    default: "{{User_id}}"
+                }
+            },
+            required: ["ticket"]
+        }
     }
 ];
 
@@ -1021,6 +1040,37 @@ async function executeTool(name, args) {
                         error: error.message || 'Failed to check domain availability'
                     };
                     log('info', `❌ check_domain_availability: ${error.message} (${domainDuration}ms)`);
+                }
+                break;
+
+            case "lookup_ticket":
+                const ticketStartTime = Date.now();
+                log('info', `🎫 lookup_ticket: phone=${args.phone ? '[PROVIDED]' : 'N/A'}, ticket=${args.ticket || 'N/A'}`);
+                
+                // Import ticket controller
+                const { lookupTicket } = require('./controllers/ticketController');
+                
+                // Call the ticket lookup function
+                const ticketResult = await lookupTicket({
+                    phone: args.phone,
+                    ticket: args.ticket
+                });
+                
+                const ticketDuration = Date.now() - ticketStartTime;
+                
+                // Wrap the result to match the expected format
+                if (ticketResult.success) {
+                    const { success, ...ticketData } = ticketResult;
+                    result = {
+                        success: true,
+                        data: ticketData
+                    };
+                    
+                    // Log success with key metrics
+                    log('info', `✅ lookup_ticket: Ticket #${ticketData.ticket?.ticketNumber}, status=${ticketData.ticket?.status} (${ticketDuration}ms)`);
+                } else {
+                    result = ticketResult;
+                    log('info', `❌ lookup_ticket: ${ticketResult.error} (${ticketDuration}ms)`);
                 }
                 break;
 

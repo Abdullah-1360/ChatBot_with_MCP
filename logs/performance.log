@@ -56,3 +56,13 @@
 [2026-03-07T10:17:12.565Z] [PERF] lookup_invoice | {"duration_ms":1231,"success":true,"multiple_invoices":false,"invoice_count":1}
 [2026-03-07T10:21:03.171Z] [PERF] check_domain_availability | {"duration_ms":1971,"success":true,"available":true,"suggestions_count":0}
 [2026-03-07T10:22:01.596Z] [PERF] check_domain_availability | {"duration_ms":1411,"success":true,"available":true,"suggestions_count":0}
+[2026-03-10T07:03:15.814Z] [PERF] check_domain_availability | {"duration_ms":1581,"success":true,"available":true,"suggestions_count":0}
+[2026-03-10T07:04:08.503Z] [PERF] check_domain_availability | {"duration_ms":1234,"success":true,"available":true,"suggestions_count":0}
+[2026-03-10T10:02:10.846Z] [PERF] search_plans | {"duration_ms":618,"success":true,"result_count":5}
+[2026-03-10T10:02:10.849Z] [PERF] get_recommendations | {"duration_ms":0,"success":false,"error":"Unknown tool: get_recommendations"}
+[2026-03-10T10:02:23.391Z] [PERF] search_plans | {"duration_ms":523,"success":true,"result_count":5}
+[2026-03-10T10:02:23.394Z] [PERF] get_recommendations | {"duration_ms":0,"success":false,"error":"Unknown tool: get_recommendations"}
+[2026-03-10T10:14:11.283Z] [PERF] lookup_ticket | {"duration_ms":2738,"success":true}
+[2026-03-10T10:29:54.927Z] [PERF] lookup_ticket | {"duration_ms":2988,"success":true}
+[2026-03-10T10:44:24.933Z] [PERF] lookup_ticket | {"duration_ms":2958,"success":true}
+[2026-03-10T10:44:42.337Z] [PERF] lookup_ticket | {"duration_ms":2562,"success":true}
