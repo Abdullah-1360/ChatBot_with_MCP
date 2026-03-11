@@ -66,3 +66,12 @@
 [2026-03-10T10:29:54.927Z] [PERF] lookup_ticket | {"duration_ms":2988,"success":true}
 [2026-03-10T10:44:24.933Z] [PERF] lookup_ticket | {"duration_ms":2958,"success":true}
 [2026-03-10T10:44:42.337Z] [PERF] lookup_ticket | {"duration_ms":2562,"success":true}
+[2026-03-11T09:04:15.615Z] [PERF] renew_service | {"duration_ms":2459,"success":true}
+[2026-03-11T09:06:27.599Z] [PERF] lookup_invoice | {"duration_ms":2042,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-11T09:12:25.098Z] [PERF] lookup_invoice | {"duration_ms":2051,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-11T09:16:29.331Z] [PERF] lookup_invoice | {"duration_ms":2021,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-11T09:19:02.965Z] [PERF] lookup_invoice | {"duration_ms":2455,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-11T09:22:14.545Z] [PERF] lookup_invoice | {"duration_ms":2775,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-11T09:24:39.125Z] [PERF] lookup_invoice | {"duration_ms":2357,"success":true,"multiple_invoices":false,"invoice_count":1}
+[2026-03-11T09:34:46.889Z] [PERF] lookup_invoice | {"duration_ms":2665,"success":true,"multiple_invoices":true,"invoice_count":2}
+[2026-03-11T09:37:22.620Z] [PERF] lookup_invoice | {"duration_ms":2232,"success":true,"multiple_invoices":true,"invoice_count":2}

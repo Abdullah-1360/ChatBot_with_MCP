@@ -445,7 +445,18 @@ async function invoiceLookup(params) {
                   const amount = amountFromInvoice(fullInvoice);
                   const dueDate = fullInvoice.duedate || null;
                   const invoiceIdOut = fullInvoice.invoiceid || fullInvoice.id;
-                  const currency = fullInvoice.currencycode; // WHMCS field: currencycode (e.g., "USD", "PKR")
+                  
+                  // Extract currency from original invoice list (preserves currency info)
+                  const currencyFromList = inv.currencycode || inv.currencyprefix || inv.currencysuffix;
+                  
+                  // Clean up currency (remove extra spaces from suffix)
+                  let currency = currencyFromList;
+                  if (currency && typeof currency === 'string') {
+                    currency = currency.trim();
+                  }
+                  
+                  // Fallback to PKR if no currency found
+                  currency = currency || 'PKR';
                   
                   // Check if overdue
                   let isOverdue = false;
@@ -476,43 +487,99 @@ async function invoiceLookup(params) {
             const validInvoices = invoiceDetails.filter(inv => inv !== null);
             
             if (validInvoices.length > 0) {
-              // Get currency from first invoice (all should be same currency for a client)
-              const currency = validInvoices[0]?.currency || 'PKR';
+              // Group invoices by currency to handle mixed currencies properly
+              const invoicesByCurrency = validInvoices.reduce((acc, inv) => {
+                const currency = inv.currency || 'PKR';
+                if (!acc[currency]) {
+                  acc[currency] = [];
+                }
+                acc[currency].push(inv);
+                return acc;
+              }, {});
               
-              // Calculate totals
-              const totalAmount = validInvoices.reduce((sum, inv) => {
-                const numAmount = parseFloat(String(inv.amount).replace(/[^0-9.-]/g, '')) || 0;
-                return sum + numAmount;
-              }, 0);
+              // Calculate totals per currency
+              const currencyTotals = {};
+              let totalInvoicesCount = 0;
+              let totalOverdueCount = 0;
               
-              const overdueCount = validInvoices.filter(inv => inv.isOverdue).length;
-              
-              // Build message
-              let message = `You have ${validInvoices.length} unpaid invoice(s)`;
-              if (overdueCount > 0) {
-                message += `, ${overdueCount} of which ${overdueCount === 1 ? 'is' : 'are'} overdue`;
+              for (const [currency, currencyInvoices] of Object.entries(invoicesByCurrency)) {
+                const currencyTotal = currencyInvoices.reduce((sum, inv) => {
+                  const numAmount = parseFloat(String(inv.amount).replace(/[^0-9.-]/g, '')) || 0;
+                  return sum + numAmount;
+                }, 0);
+                
+                const currencyOverdue = currencyInvoices.filter(inv => inv.isOverdue).length;
+                
+                currencyTotals[currency] = {
+                  amount: currencyTotal.toFixed(2),
+                  count: currencyInvoices.length,
+                  overdueCount: currencyOverdue,
+                  invoices: currencyInvoices
+                };
+                
+                totalInvoicesCount += currencyInvoices.length;
+                totalOverdueCount += currencyOverdue;
               }
-              message += `. Total amount due: ${totalAmount.toFixed(2)} ${currency}.`;
               
-              console.log('→ FINAL RESPONSE (Multiple invoices):', JSON.stringify({
-                success: true,
-                multipleInvoices: true,
-                count: validInvoices.length,
-                totalAmount: totalAmount.toFixed(2),
-                currency,
-                overdueCount
-              }, null, 2));
+              // Build message for multiple currencies
+              let message = `You have ${totalInvoicesCount} unpaid invoice(s)`;
+              if (totalOverdueCount > 0) {
+                message += `, ${totalOverdueCount} of which ${totalOverdueCount === 1 ? 'is' : 'are'} overdue`;
+              }
+              message += '. ';
               
-              return {
-                success: true,
-                multipleInvoices: true,
-                count: validInvoices.length,
-                invoices: validInvoices,
-                totalAmount: totalAmount.toFixed(2),
-                currency,
-                overdueCount,
-                message
-              };
+              // Add currency-specific totals
+              const currencyMessages = Object.entries(currencyTotals).map(([currency, data]) => {
+                return `${data.amount} ${currency} (${data.count} invoice${data.count > 1 ? 's' : ''})`;
+              });
+              message += `Total amounts due: ${currencyMessages.join(', ')}.`;
+              
+              // For backward compatibility, if only one currency, use the old format
+              const currencies = Object.keys(currencyTotals);
+              if (currencies.length === 1) {
+                const singleCurrency = currencies[0];
+                const singleCurrencyData = currencyTotals[singleCurrency];
+                
+                console.log('→ FINAL RESPONSE (Multiple invoices, single currency):', JSON.stringify({
+                  success: true,
+                  multipleInvoices: true,
+                  count: totalInvoicesCount,
+                  totalAmount: singleCurrencyData.amount,
+                  currency: singleCurrency,
+                  overdueCount: totalOverdueCount
+                }, null, 2));
+                
+                return {
+                  success: true,
+                  multipleInvoices: true,
+                  count: totalInvoicesCount,
+                  invoices: validInvoices,
+                  totalAmount: singleCurrencyData.amount,
+                  currency: singleCurrency,
+                  overdueCount: totalOverdueCount,
+                  message
+                };
+              } else {
+                // Multiple currencies - return detailed breakdown
+                console.log('→ FINAL RESPONSE (Multiple invoices, multiple currencies):', JSON.stringify({
+                  success: true,
+                  multipleInvoices: true,
+                  count: totalInvoicesCount,
+                  currencyTotals,
+                  overdueCount: totalOverdueCount
+                }, null, 2));
+                
+                return {
+                  success: true,
+                  multipleInvoices: true,
+                  count: totalInvoicesCount,
+                  invoices: validInvoices,
+                  currencyTotals,
+                  overdueCount: totalOverdueCount,
+                  message,
+                  note: 'Multiple currencies detected - see currencyTotals for breakdown'
+                };
+              }
             }
           } else {
             // Single unpaid invoice - use existing logic

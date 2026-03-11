@@ -790,6 +790,33 @@ const MCP_TOOLS = [
             },
             required: ["ticket"]
         }
+    },
+    {
+        name: "renew_service",
+        description: "Renew hosting service or domain with automatic client resolution. Supports both hosting services and domain renewals. Phone validation is automatic via uChat variables. Returns invoice details or existing invoice information.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                domain: {
+                    type: "string",
+                    description: "Domain name to renew (required). Can be hosting service domain or standalone domain."
+                },
+                email: {
+                    type: "string",
+                    description: "Client email for identification (optional, auto-resolved if not provided)"
+                },
+                phone: {
+                    type: "string",
+                    description: "Client phone number (automatically filled from uChat variables)",
+                    default: "{{User_id}}"
+                },
+                clientId: {
+                    type: "string",
+                    description: "WHMCS client ID (optional, auto-resolved if not provided)"
+                }
+            },
+            required: ["domain"]
+        }
     }
 ];
 
@@ -1071,6 +1098,45 @@ async function executeTool(name, args) {
                 } else {
                     result = ticketResult;
                     log('info', `❌ lookup_ticket: ${ticketResult.error} (${ticketDuration}ms)`);
+                }
+                break;
+
+            case "renew_service":
+                const renewStartTime = Date.now();
+                log('info', `🔄 renew_service: domain=${args.domain || 'N/A'}, email=${args.email ? '[PROVIDED]' : 'N/A'}, phone=${args.phone ? '[PROVIDED]' : 'N/A'}`);
+                
+                // Import renew service controller
+                const { renewService } = require('./controllers/renewServiceController');
+                
+                // Call the renew service function
+                const renewResult = await renewService({
+                    domain: args.domain,
+                    email: args.email,
+                    phone: args.phone,
+                    clientId: args.clientId
+                });
+                
+                const renewDuration = Date.now() - renewStartTime;
+                
+                // Wrap the result to match the expected format
+                if (renewResult.success) {
+                    const { success, ...renewData } = renewResult;
+                    result = {
+                        success: true,
+                        data: renewData
+                    };
+                    
+                    // Log success with key metrics
+                    if (renewData.existingInvoice) {
+                        log('info', `✅ renew_service: Existing invoice #${renewData.invoiceId}, amount=${renewData.amount} (${renewDuration}ms)`);
+                    } else if (renewData.invoiceGenerated) {
+                        log('info', `✅ renew_service: New invoice #${renewData.invoiceId}, amount=${renewData.amount} (${renewDuration}ms)`);
+                    } else {
+                        log('info', `✅ renew_service: Renewal initiated for ${renewData.domain} (${renewDuration}ms)`);
+                    }
+                } else {
+                    result = renewResult;
+                    log('info', `❌ renew_service: ${renewResult.error} (${renewDuration}ms)`);
                 }
                 break;
 
