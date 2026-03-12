@@ -27,6 +27,47 @@ const {
 const { normalizePhone, phonesMatch, maskPhone } = require('../../src/utils/phoneNormalizer');
 
 /**
+ * Helper function to extract currency from invoice data
+ * Uses the same pattern as invoice controller
+ */
+function extractCurrencyFromInvoice(invoiceFromList, invoiceDetails) {
+  // Try to get currency from the original invoice list first (preserves currency info)
+  let currency = null;
+  
+  // Check if we have the list item (from findRelatedUnpaidInvoice)
+  if (invoiceDetails && invoiceDetails._listItem) {
+    const listItem = invoiceDetails._listItem;
+    currency = listItem.currencycode || listItem.currencyprefix || listItem.currencysuffix;
+  }
+  
+  // Fallback to provided invoiceFromList
+  if (!currency && invoiceFromList) {
+    currency = invoiceFromList.currencycode || invoiceFromList.currencyprefix || invoiceFromList.currencysuffix;
+  }
+  
+  // Fallback to invoice details if available (usually won't have currency)
+  if (!currency && invoiceDetails) {
+    currency = invoiceDetails.currencycode || invoiceDetails.currencyprefix || invoiceDetails.currencysuffix;
+  }
+  
+  // Clean up currency (remove extra spaces from suffix)
+  if (currency && typeof currency === 'string') {
+    currency = currency.trim();
+  }
+  
+  // Fallback to PKR if no currency found
+  return currency || 'PKR';
+}
+
+/**
+ * Helper function to format amount with currency
+ */
+function formatAmountWithCurrency(amount, currency) {
+  const numericAmount = Number(amount) || 0;
+  return `${numericAmount} ${currency}`;
+}
+
+/**
  * Helper function to resolve domain to client
  */
 async function resolveDomainToClient(domain) {
@@ -138,7 +179,7 @@ async function renewService(params) {
   const { 
     domain, 
     email, 
-    phone = "{{User_id}}", 
+    phone, 
     clientId, 
     number, 
     user_ns 
@@ -148,19 +189,19 @@ async function renewService(params) {
   console.log('[MCP renewService] Parameters received:', {
     domain: domain || 'N/A',
     hasEmail: !!email,
-    phone: phone ? (phone.startsWith('{{') ? phone : `${phone.substring(0, 3)}***`) : 'N/A',
+    phone: phone ? `${phone.substring(0, 3)}***` : 'N/A',
     hasClientId: !!clientId,
     hasUserNs: !!user_ns
   });
   
   try {
     // Validate required parameters
-    if (!domain) {
-      throw new Error('domain is required');
+    if (!phone) {
+      throw new Error('phone is required for security validation');
     }
     
-    if (!email && !phone && !clientId) {
-      throw new Error('email, phone, or clientId is required for client identification');
+    if (!domain && !email) {
+      throw new Error('either domain or email is required for client identification');
     }
     
     let resolvedClientId = clientId;
@@ -244,27 +285,26 @@ async function renewService(params) {
       throw new Error('Could not resolve client from provided information. Please provide email or domain.');
     }
     
-    // PHONE VALIDATION: Validate phone number if provided (after client resolution)
-    if (phone && phone !== "{{User_id}}" && resolvedClientId) {
-      console.log('→ Performing phone validation...');
+    // PHONE VALIDATION: Always validate phone number (required parameter)
+    console.log('→ Performing second-level phone validation...');
+    
+    try {
+      const phoneValidationResult = await validateClientPhone(resolvedClientId, phone);
       
-      try {
-        const phoneValidationResult = await validateClientPhone(resolvedClientId, phone);
-        
-        if (!phoneValidationResult.valid) {
-          // Phone validation failed - return masked phone error
-          const maskedPhone = phoneValidationResult.registeredPhone 
-            ? maskPhoneNumber(phoneValidationResult.registeredPhone)
-            : 'your registered number';
-            
-          throw new Error(`Please contact from ${maskedPhone} or change the phone number from your client area to ${phone} (current number)`);
-        }
-        
-        console.log('✓ Phone validation passed');
-      } catch (error) {
-        console.log('✗ Phone validation error:', error.message);
-        throw new Error('Phone validation failed. Please try again or contact support.');
+      if (!phoneValidationResult.valid) {
+        // Phone validation failed - show masked registered phone to help client
+        const maskedRegisteredPhone = phoneValidationResult.registeredPhone 
+          ? maskPhoneNumber(phoneValidationResult.registeredPhone)
+          : 'your registered number';
+          
+        throw new Error(`Phone number mismatch. Please contact from ${maskedRegisteredPhone} (your registered number) or update your phone number in the client area first.`);
       }
+      
+      console.log('✓ Phone validation passed');
+    } catch (error) {
+      console.log('✗ Phone validation error:', error.message);
+      // Return the specific error message instead of generic one
+      throw error;
     }
     
     // Use the resolved clientId for the rest of the function
@@ -341,7 +381,11 @@ async function renewService(params) {
       const invoiceId = existing.invoiceid || existing.id;
       const dueDate = existing.duedate;
       
-      console.log('→ Existing invoice found:', invoiceId, 'Due:', dueDate, 'Amount:', amount);
+      // Extract currency information (same pattern as invoice controller)
+      const currency = extractCurrencyFromInvoice(existing, existing);
+      const formattedAmount = formatAmountWithCurrency(amount, currency);
+      
+      console.log('→ Existing invoice found:', invoiceId, 'Due:', dueDate, 'Amount:', formattedAmount);
       
       // Check if invoice is overdue
       const now = new Date();
@@ -351,16 +395,17 @@ async function renewService(params) {
       let message;
       if (isOverdue) {
         const daysOverdue = Math.ceil((now - due) / (1000 * 60 * 60 * 24));
-        message = `Invoice #${invoiceId} for renewal is overdue by ${daysOverdue} day(s) (due: ${dueDate}). Please pay ${amount} to reactivate your service.`;
+        message = `Invoice #${invoiceId} for renewal is overdue by ${daysOverdue} day(s) (due: ${dueDate}). Please pay ${formattedAmount} to reactivate your service.`;
       } else {
-        message = `An invoice for renewal already exists: Invoice #${invoiceId} for ${amount} due on ${dueDate}. Please pay this invoice to renew your service.`;
+        message = `An invoice for renewal already exists: Invoice #${invoiceId} for ${formattedAmount} due on ${dueDate}. Please pay this invoice to renew your service.`;
       }
       
       return {
         success: true,
         existingInvoice: true,
         invoiceId: invoiceId,
-        amount: amount,
+        amount: formattedAmount,
+        currency: currency,
         dueDate: dueDate,
         isOverdue: isOverdue,
         message: message,
@@ -447,15 +492,20 @@ async function renewService(params) {
         const amount = amountFromInvoice(recentInvoice);
         const invoiceId = recentInvoice.invoiceid || recentInvoice.id;
         
-        console.log('✅ Renewal invoice generated:', invoiceId, 'Amount:', amount);
+        // Extract currency information
+        const currency = extractCurrencyFromInvoice(recentInvoice, recentInvoice);
+        const formattedAmount = formatAmountWithCurrency(amount, currency);
+        
+        console.log('✅ Renewal invoice generated:', invoiceId, 'Amount:', formattedAmount);
         
         return {
           success: true,
           invoiceGenerated: true,
           invoiceId: invoiceId,
-          amount: amount,
+          amount: formattedAmount,
+          currency: currency,
           dueDate: recentInvoice.duedate,
-          message: `Renewal invoice #${invoiceId} generated successfully for ${amount}. Please pay to complete the renewal.`,
+          message: `Renewal invoice #${invoiceId} generated successfully for ${formattedAmount}. Please pay to complete the renewal.`,
           serviceType: 'hosting',
           serviceId: serviceId,
           domain: domain,
@@ -507,16 +557,19 @@ async function renewService(params) {
           }
         }
         
-        const amount = invoiceDetails ? amountFromInvoice(invoiceDetails) : 'N/A';
+        const amount = invoiceDetails ? amountFromInvoice(invoiceDetails) : 0;
+        const currency = invoiceDetails ? extractCurrencyFromInvoice(invoiceDetails, invoiceDetails) : 'PKR';
+        const formattedAmount = formatAmountWithCurrency(amount, currency);
         
         return {
           success: true,
           invoiceGenerated: true,
           orderId: orderId,
           invoiceId: invoiceId,
-          amount: amount,
+          amount: formattedAmount,
+          currency: currency,
           dueDate: invoiceDetails?.duedate,
-          message: `Domain renewal order created successfully. Invoice #${invoiceId} for ${amount}. Please pay to complete the renewal.`,
+          message: `Domain renewal order created successfully. Invoice #${invoiceId} for ${formattedAmount}. Please pay to complete the renewal.`,
           serviceType: 'domain',
           domainId: domainId,
           domain: domain,

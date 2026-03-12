@@ -28,6 +28,7 @@ function amountFromInvoice(inv) {
 /**
  * Find related unpaid invoice for a service or domain
  * Properly parses invoice items and matches by relid (related ID)
+ * Returns both list item (with currency) and detail (with items)
  */
 async function findRelatedUnpaidInvoice(clientId, { domain, serviceId, domainId }) {
   const list = await getInvoices({ userid: clientId, status: 'Unpaid', limitnum: 50 });
@@ -52,17 +53,20 @@ async function findRelatedUnpaidInvoice(clientId, { domain, serviceId, domainId 
         
         // Match by service ID (for hosting/services)
         if (serviceId && itemRelId === String(serviceId)) {
-          return detail;
+          // Return both list item (with currency) and detail (with items)
+          return { ...detail, _listItem: inv };
         }
         
         // Match by domain ID (for domain registrations)
         if (domainId && itemRelId === String(domainId)) {
-          return detail;
+          // Return both list item (with currency) and detail (with items)
+          return { ...detail, _listItem: inv };
         }
         
         // Fallback: Match by domain name in description
         if (domain && itemDescription.includes(String(domain).toLowerCase())) {
-          return detail;
+          // Return both list item (with currency) and detail (with items)
+          return { ...detail, _listItem: inv };
         }
       }
     } catch (err) {

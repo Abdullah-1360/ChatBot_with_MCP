@@ -793,29 +793,32 @@ const MCP_TOOLS = [
     },
     {
         name: "renew_service",
-        description: "Renew hosting service or domain with automatic client resolution. Supports both hosting services and domain renewals. Phone validation is automatic via uChat variables. Returns invoice details or existing invoice information.",
+        description: "Renew hosting service or domain with automatic client resolution. Supports both hosting services and domain renewals. Phone validation is automatic and required for security. Requires either domain OR email for client identification. Returns invoice details or existing invoice information.",
         inputSchema: {
             type: "object",
             properties: {
                 domain: {
                     type: "string",
-                    description: "Domain name to renew (required). Can be hosting service domain or standalone domain."
+                    description: "Domain name to renew (required if email not provided). Can be hosting service domain or standalone domain."
                 },
                 email: {
                     type: "string",
-                    description: "Client email for identification (optional, auto-resolved if not provided)"
+                    description: "Client email for identification (required if domain not provided)"
                 },
                 phone: {
                     type: "string",
-                    description: "Client phone number (automatically filled from uChat variables)",
-                    default: "{{User_id}}"
+                    description: "Client phone number for validation (required, provided by AI Agent)"
                 },
                 clientId: {
                     type: "string",
                     description: "WHMCS client ID (optional, auto-resolved if not provided)"
                 }
             },
-            required: ["domain"]
+            required: ["phone"],
+            oneOf: [
+                { required: ["domain"] },
+                { required: ["email"] }
+            ]
         }
     }
 ];
